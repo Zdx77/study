@@ -9,7 +9,9 @@ import com.ouc.study.entity.DiscussPost;
 import com.ouc.study.entity.Page;
 import com.ouc.study.entity.User;
 import com.ouc.study.service.DiscussPostService;
+import com.ouc.study.service.LikeService;
 import com.ouc.study.service.UserService;
+import com.ouc.study.util.StudyConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,13 +24,16 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements StudyConstant {
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private DiscussPostService discussPostService;
+
+    @Autowired
+    private LikeService likeService;
 
     @RequestMapping(path = "/index",method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page){
@@ -44,11 +49,18 @@ public class HomeController {
                 Map<String,Object> map = new HashMap<>();
                 map.put("post",post);
                 User user = userService.findUserById(post.getUserId());
-                map.put("user",user);
+                map.put("user",user);       // 把用户表信息也放进去
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount",likeCount);
                 discussPosts.add(map);
             }
         }
         model.addAttribute("discussPosts",discussPosts);
         return "/index";
+    }
+
+    @RequestMapping(path = "/error",method = RequestMethod.GET)
+    public String getErrorPage(){
+        return "/error/500";
     }
 }

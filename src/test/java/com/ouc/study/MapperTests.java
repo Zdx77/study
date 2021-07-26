@@ -6,8 +6,12 @@ package com.ouc.study;/*
  */
 
 import com.ouc.study.dao.DiscussPostMapper;
+import com.ouc.study.dao.LoginTicketMapper;
+import com.ouc.study.dao.MessageMapper;
 import com.ouc.study.dao.UserMapper;
 import com.ouc.study.entity.DiscussPost;
+import com.ouc.study.entity.LoginTicket;
+import com.ouc.study.entity.Message;
 import com.ouc.study.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +31,11 @@ public class MapperTests {
     private UserMapper userMapper;
     @Autowired
     private DiscussPostMapper discussPostMapper;
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     @Test
     public void testSelectUser(){
@@ -75,6 +84,50 @@ public class MapperTests {
         }
         int rows = discussPostMapper.selectDiscussPostRows(149);
         System.out.println(rows);
+    }
+
+    @Test
+    public void testInsertLogingTicket(){
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setTicket("abc");
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + 1000 * 60 * 10));
+
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }
+
+    @Test
+    public void testSelectLoginTicket(){
+        LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+
+        loginTicketMapper.updateStatus("abc",1);
+        loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+
+    }
+
+
+    @Test
+    public void testSelectLetters(){
+        List<Message> list = messageMapper.selectConversations(111, 0, 20);
+        for(Message message : list){
+            System.out.println(message);
+        }
+
+        int count = messageMapper.selectConversationCount(111);
+        System.out.println(count);
+
+        list = messageMapper.selectLetters("111_112",0,20);
+        for (Message message: list){
+            System.out.println(message);
+        }
+        count = messageMapper.selectLettersCount("111_112");
+        System.out.println(count);
+
+        count = messageMapper.selectLetterUnreadCount(131,"111_131");
+        System.out.println(count);
     }
 
 }
