@@ -10,9 +10,11 @@ import com.ouc.study.entity.User;
 import com.ouc.study.event.EventProducer;
 import com.ouc.study.service.LikeService;
 import com.ouc.study.util.HostHolder;
+import com.ouc.study.util.RedisKeyUtil;
 import com.ouc.study.util.StudyConstant;
 import com.ouc.study.util.StudyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +34,9 @@ public class LikeController implements StudyConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/like",method = RequestMethod.POST)
     @ResponseBody
@@ -59,8 +64,13 @@ public class LikeController implements StudyConstant {
                     .setData("postId",postId);
 
             eventProducer.fileEvent(event);
-        }
 
+            if(entityType == ENTITY_TYPE_POST){
+                //计算帖子分数
+                String redisKey = RedisKeyUtil.getPostScoreKey();
+                redisTemplate.opsForSet().add(redisKey,postId);
+            }
+        }
         return StudyUtil.getJSONString(0,null,map);
     }
 

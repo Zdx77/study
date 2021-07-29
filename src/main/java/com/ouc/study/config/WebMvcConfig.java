@@ -5,11 +5,7 @@ package com.ouc.study.config;/*
  *描述: TODO
  */
 
-import com.ouc.study.controller.interceptor.AlphaInterceptor;
-import com.ouc.study.controller.interceptor.LoginRequiredInceptor;
-import com.ouc.study.controller.interceptor.LoginTicketInceptor;
-import com.ouc.study.controller.interceptor.MessageInterceptor;
-import com.ouc.study.dao.LoginTicketMapper;
+import com.ouc.study.controller.interceptor.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -22,13 +18,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private AlphaInterceptor alphaInterceptor;
 
     @Autowired
-    private LoginTicketInceptor loginTicketInceptor;
+    private LoginTicketInterceptor loginTicketInterceptor;
 
-    @Autowired
-    private LoginRequiredInceptor loginRequiredInceptor;
+//    @Autowired
+//    private LoginRequiredInceptor loginRequiredInceptor;
 
     @Autowired
     private MessageInterceptor messageInterceptor;
+
+    @Autowired
+    private DataInterceptor dataInterceptor;
 
     @Override
     public void  addInterceptors(InterceptorRegistry registry){
@@ -36,13 +35,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
             .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg")
             .addPathPatterns("/register","/login");
 
-        registry.addInterceptor(loginTicketInceptor)
+        registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
 
-        registry.addInterceptor(loginRequiredInceptor)
-                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+//        registry.addInterceptor(loginRequiredInceptor)
+//                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+
 
         registry.addInterceptor(messageInterceptor)
+                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+
+        registry.addInterceptor(dataInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
 
 
